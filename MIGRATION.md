@@ -38,6 +38,18 @@ Optional keys:
 - `GOOGLE_SHEETS_*`
 - `REPORT_TZ`
 
+### Google Sheets (if enabled)
+If you use Google Sheets sync, make sure these are updated on the new server:
+- `GOOGLE_SHEETS_SPREADSHEET_ID` (new spreadsheet ID)
+- `GOOGLE_SHEETS_TAB_NAME`
+- `GOOGLE_SHEETS_SERVICE_ACCOUNT_FILE` or `GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON`
+
+Recommended setup:
+- Store the service account JSON as `.secrets/google_service_account.json` (this path is git‑ignored).
+- Set `GOOGLE_SHEETS_SERVICE_ACCOUNT_FILE=.secrets/google_service_account.json` in `.env`.
+
+If the spreadsheet address changes, update both `.env` and this guide so the manual stays accurate.
+
 ## Step 3. Configure domain routing
 Two supported patterns are documented below. Choose one.
 
