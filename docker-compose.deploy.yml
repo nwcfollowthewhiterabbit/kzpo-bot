@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql+psycopg2://eniq:eniq@db:5432/eniq
+    labels:
+      - "traefik.enable=${TRAEFIK_ENABLE:-true}"
+      - "traefik.http.routers.kzpo-webhook.rule=Host(`${PUBLIC_DOMAIN}`) && PathPrefix(`/webhooks/ringostat/`)"
+      - "traefik.http.routers.kzpo-webhook.entrypoints=${TRAEFIK_ENTRYPOINT:-websecure}"
+      - "traefik.http.routers.kzpo-webhook.tls.certresolver=${TRAEFIK_RESOLVER:-main-resolver}"
+      - "traefik.http.routers.kzpo-webhook.priority=100"
+      - "traefik.http.services.kzpo-webhook.loadbalancer.server.port=8080"
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    networks:
+      - default
+      - traefik
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: eniq
+      POSTGRES_PASSWORD: eniq
+      POSTGRES_DB: eniq
+    ports:
+      - "${DB_PORT:-5435}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_PUBLIC_NETWORK:-traefik}
